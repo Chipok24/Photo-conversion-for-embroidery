@@ -7,6 +7,7 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.ColorSpaces;
 using SixLabors.ImageSharp.ColorSpaces.Conversion;
 using SixLabors.ImageSharp.Processing;
+using System.ComponentModel;
 
 namespace image
 {
@@ -36,34 +37,56 @@ namespace image
                     }
                 }
 
-                CieLab[] colorsWork = AnalyticsPixel(countColorsResult, colorsLAB);
-                CreateUsingPixel(colorsWork);
+                 List<ModelColor> WorkColors = AnalyticsPixel(countColorsResult, colorsLAB);
+                //CreateUsingPixel(colorsWork);
 
 
-                for (int i = 1; i < image.Height; i++)
+                using (Image<Rgba32> imageO = new Image<Rgba32>(image.Width*10, image.Height*10))
                 {
-                    for (int j = 1; j < image.Width; j++)
+                    for (int i = 0; i < image.Height; i++)
                     {
-                        minColorEuclidian = double.MaxValue;
-                        colorRGBA = image[j, i];
-                        if (colorRGBA.A == 0) continue;
-                        Rgb colorRGB = ConvertToRgb(colorRGBA);
-                        var colorCielab = converter.ToCieLab(colorRGB);
-                        Rgb minColorEuclidianRGB = colorRGBA;
-                        foreach (var item in colorsWork)
+                        for (int j = 0; j < image.Width; j++)
                         {
-                            var itemColor = item;
-                            double result = Evclid(colorCielab, item);
-                            if (result <= minColorEuclidian)
+                            minColorEuclidian = double.MaxValue;
+                            colorRGBA = image[j, i];
+                            if (colorRGBA.A == 0) continue;
+                            Rgb colorRGB = ConvertToRgb(colorRGBA);
+                            var colorCielab = converter.ToCieLab(colorRGB);
+                            Rgb minColorEuclidianRGB = colorRGBA;
+                            byte[,] symbolWork = new byte[1, 1];
+                            foreach (var item in WorkColors)
                             {
-                                minColorEuclidian = result;
-                                minColorEuclidianRGB = converter.ToRgb(item);
+
+                                double result = Evclid(colorCielab, item.CieLabColor);
+                                if (result <= minColorEuclidian)
+                                {
+                                    minColorEuclidian = result;
+                                    minColorEuclidianRGB = item.RgbColor;
+                                    symbolWork = item.Symbol;
+                                }
                             }
+
+                            for (int hO = i*10; hO < i*10+10; hO++)
+                            {
+                                for (int wO = j*10; wO < j*10+10; wO++)
+                                {
+                                    //Console.WriteLine($"{wO} {hO}");
+                                    if (symbolWork[hO%10, wO%10] == 0)
+                                    {
+                                        imageO[wO, hO] = minColorEuclidianRGB;
+                                    }
+                                    else
+                                    {
+                                        imageO[wO, hO] = new Rgb(0, 0, 0);
+                                    }
+                                }
+                            }
+                            image[j, i] = minColorEuclidianRGB;
                         }
-                        image[j, i] = minColorEuclidianRGB;
                     }
+                    imageO.SaveAsPng("F:\\code\\images\\bigtest.png");
+                    image.SaveAsPng(FileOutput);
                 }
-                image.SaveAsPng(FileOutput);
             }
         }
 
@@ -98,7 +121,6 @@ namespace image
                 int i = 1;
                 foreach (var item in colorsWork)
                 {
-                    //Console.WriteLine(item);
                     testImage[i, 15] = converter.ToRgb(item);
                     i++;
                 }
@@ -106,8 +128,9 @@ namespace image
             }
         }
 
-        private static CieLab[] AnalyticsPixel(int countColorsResult, List<CieLab> colorsLAB)
+        private static List<ModelColor> AnalyticsPixel(int countColorsResult, List<CieLab> colorsLAB)
         {
+            List<ModelColor> WorkColors = new List<ModelColor>();
             Random random = new Random();
 
             CieLab[] colorsWork = new CieLab[countColorsResult];
@@ -165,7 +188,27 @@ namespace image
                 }
             }
 
-            return colorsWork;
+            for (int i = 0; i < colorsWork.Count(); i++)
+            {
+                minColorEuclidian = double.MaxValue;
+                color = colorsWork[i];
+                string IdThread = string.Empty;
+                Rgb rgbcolor = new Rgb(0 ,0 ,0);
+                for (int j = 0; j < DATACOLOR.ColorsGammaList.Count; j++)
+                {
+                    double result = Evclid(colorsWork[i], DATACOLOR.ColorsGammaList[j].CieLabColor);
+                    if (result < minColorEuclidian)
+                    {
+                        minColorEuclidian = result;
+                        color = DATACOLOR.ColorsGammaList[j].CieLabColor;
+                        IdThread = DATACOLOR.ColorsGammaList[j].IdThread;
+                        rgbcolor = DATACOLOR.ColorsGammaList[j].RgbColor;
+                    }
+                }
+                WorkColors.Add(new ModelColor(color, rgbcolor, IdThread) {Symbol = DATACOLOR.SpecialSymbol[i]});
+            }
+
+            return WorkColors;
         }
         private static double Evclid(CieLab cieLab1, CieLab cieLab2)
         {
