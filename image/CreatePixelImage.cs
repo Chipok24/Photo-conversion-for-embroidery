@@ -22,6 +22,7 @@ namespace image
                 List<CieLab> colorsLAB = new List<CieLab>();
                 double minColorEuclidian;
 
+                // подсчет всех пикселей
                 image.Mutate(x => x.Resize(wsm * 6, hsm * 6));
                 for (int i = 1; i < image.Height; i++)
                 {
@@ -78,14 +79,14 @@ namespace image
                     minColorEuclidian = double.MaxValue;
                     color = colorsWork[i];
                     string IdThread = string.Empty;
-                    for (int j = 0; j < Dict.ColorsGammaList.Count; j++)
+                    for (int j = 0; j < DATACOLOR.ColorsGammaList.Count; j++)
                     {
-                        double result = Evclid(colorsWork[i], Dict.ColorsGammaList[j].CieLabColor);
+                        double result = Evclid(colorsWork[i], DATACOLOR.ColorsGammaList[j].CieLabColor);
                         if (result < minColorEuclidian)
                         {
                             minColorEuclidian = result;
-                            color = Dict.ColorsGammaList[j].CieLabColor;
-                            IdThread = Dict.ColorsGammaList[j].IdThread;
+                            color = DATACOLOR.ColorsGammaList[j].CieLabColor;
+                            IdThread = DATACOLOR.ColorsGammaList[j].IdThread;
                         }
                     }
                     colorsWork[i] = color;
@@ -163,6 +164,7 @@ namespace image
                     sumL = 0; sumA = 0; sumB = 0; countLAB = 0;
                 }
             }
+
             return colorsWork;
         }
         private static double Evclid(CieLab cieLab1, CieLab cieLab2)
