@@ -8,14 +8,32 @@ using System.Reflection.Emit;
 using System.IO;
 using image;
 
-string FileInput = "F:\\code\\images\\Yrt.jpg";
-string FileOutput = "F:\\code\\images\\Yrt.png";
+string FileInput = "F:\\code\\images\\Duck2.png";
+string FileOutput = "F:\\code\\images\\Duck.png";
 string SaveBIGFilePath = "F:\\code\\images\\bigtest.png";
-int countColorsResult = 30; // количество цветов будет в итоговом изображении (из-за алгоритма подбора, их будет возможно меньше)
-int wsm = 20; //ширина в см
-int hsm = 25; //высота в см
-CreatePixelImage.CreateIamge(FileInput, FileOutput, countColorsResult, wsm, hsm);
+int countColorsResult = 25; // количество цветов будет в итоговом изображении (из-за алгоритма подбора, их будет возможно меньше)
+int wsm = 25; //ширина в см
+int hsm = 20; //высота в см
+
+CreatePixelImage createPixelImage = new CreatePixelImage(new Analitycs(), new ThreadSelection(), new DrawSymbols());
+var result = createPixelImage.CreateIamge(FileInput, FileOutput, countColorsResult, wsm, hsm);
+
+UsingColors usingColors = new UsingColors();
+usingColors.CreatePNGUsingColor(result);
+
+ResizeImages resizeImages = new ResizeImages();
+resizeImages.CreateBigImages(FileOutput, SaveBIGFilePath, result);
+
+
 //MagnificationImage.Magnification(FileOutput, SaveBIGFilePath);
+
+
+
+
+
+
+
+
 
 
 
