@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.ColorSpaces;
+using SixLabors.ImageSharp.Processing;
 public class ResizeImages
 {
     public void CreateBigImages(string FileInput, string FileBigOutput, List<ModelColor> Colors)
@@ -17,7 +18,7 @@ public class ResizeImages
                 for (int j = 0; j < image.Width; j++)
                 {
                     if (image[j, i].A == 0) continue;
-                    byte[,] symbolWork = new byte[0, 0];
+                    byte[,] symbolWork = null;
                     Rgb color = image[j, i];
                     foreach (var item in Colors)
                     {
@@ -41,6 +42,14 @@ public class ResizeImages
                 }
             }
             imageO.SaveAsPng(FileBigOutput);
+        }
+    }
+    public void DecreaseImage(string FileInput, int wsm, int hsm)
+    {
+        using(Image<Rgba32> image = Image.Load<Rgba32>(FileInput))
+        {
+            image.Mutate(x => x.Resize(wsm * 6, hsm * 6));
+            image.SaveAsPng("F:\\code\\images\\Work.png");
         }
     }
 }

@@ -9,7 +9,7 @@ using SixLabors.ImageSharp.PixelFormats;
 
 public class UsingColors
 {
-    public async void CreateTXTUsingColorThread(List<ModelColor> colors)
+    public async Task CreateTXTUsingColorThread(List<ModelColor> colors)
     {
         using (StreamWriter writer = new StreamWriter("F:\\code\\images\\threadsUsed.txt", false))
         {
