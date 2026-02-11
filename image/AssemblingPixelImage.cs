@@ -21,7 +21,7 @@ public class AssemblingPixelImage : IAssemblingPixelImage
         List<ModelColor> WorkColors = _analitycs.KMeans(countColorsResult, colorsLAB);
         WorkColors = _threadSelection.ThreadGamma(WorkColors);
         WorkColors = _drawSymbols.AssignmentSymbolForColor(WorkColors);
-        WorkColors = WorkColors.GroupBy(x => x.IdThread).Select(y => y.First()).ToList();
+        //WorkColors = WorkColors.GroupBy(x => x.IdThread).Select(y => y.First()).ToList();
         return WorkColors;
     }
 }
