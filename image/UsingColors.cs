@@ -11,7 +11,7 @@ public class UsingColors
 {
     public async Task CreateTXTUsingColorThread(List<ModelColor> colors)
     {
-        using (StreamWriter writer = new StreamWriter("F:\\code\\images\\threadsUsed.txt", false))
+        using (StreamWriter writer = new StreamWriter("Путь, в который необходимо сохранить txt файл", false))
         {
             for (int i = 0; i < colors.Count(); i++)
             {
@@ -46,7 +46,7 @@ public class UsingColors
                 starti+=10;
             }
             
-            image.SaveAsPng("F:\\code\\images\\test2.png");
+            image.SaveAsPng("Путь, в который необходимо сохранить используемые цвета");
         }
     }
 }
