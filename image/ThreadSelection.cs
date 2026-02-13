@@ -19,7 +19,7 @@ public class ThreadSelection : IThreadSelection
             for (int j = 0; j < DATACOLOR.ColorsGammaList.Count; j++)
             {
                 var dataColor = DATACOLOR.ColorsGammaList[j];
-                double result = Formulas.Evclid(color.L, dataColor.CieLabColor.L, color.A, dataColor.CieLabColor.A, color.B, dataColor.CieLabColor.B);
+                double result = Formulas.CIEDE2000(color, dataColor.CieLabColor);
                 if (result < minColorEuclidian && !colorsFull.Any(x =>x.IdThread == dataColor.IdThread))
                 {
                     minColorEuclidian = result;

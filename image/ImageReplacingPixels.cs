@@ -30,7 +30,7 @@ public class ImageReplacingPixels : IImageReplacingPixels
                 Rgb minColorEuclidianRGB = colorRGB;
                 foreach (var item in WorkColors)
                 {
-                    double result = Formulas.Evclid(colorCielab.L, item.CieLabColor.L, colorCielab.A, item.CieLabColor.A, colorCielab.B, item.CieLabColor.B);
+                    double result = Formulas.CIEDE2000(colorCielab, item.CieLabColor);
                     if (result <= minColorEuclidian)
                     {
                         minColorEuclidian = result;

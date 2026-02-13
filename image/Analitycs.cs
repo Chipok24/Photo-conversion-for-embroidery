@@ -30,10 +30,10 @@ public class Analitycs : IAnalitycs
                 color = colorsLAB[i];
                 for (int j = 0; j < countColorsResult; j++)
                 {
-                    double resultEvclid = Formulas.Evclid(color.L, colorsWork[j].L, color.A, colorsWork[j].A, color.B, colorsWork[j].B);
-                    if (resultEvclid < minColorEuclidian)
+                    double result = Formulas.Evclid(color, colorsWork[j]);
+                    if (result < minColorEuclidian)
                     {
-                        minColorEuclidian = resultEvclid;
+                        minColorEuclidian = result;
                         idColorWork = j;
                     }
                 }

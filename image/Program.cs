@@ -3,13 +3,14 @@ using SixLabors.ImageSharp.ColorSpaces.Conversion;
 using image;
 using Microsoft.VisualBasic;
 using System.Linq;
+using SixLabors.ImageSharp.ColorSpaces;
 
-string FileInput = "F:\\code\\images\\tony2.png";
-string FileOutput = "F:\\code\\images\\bir.png";
+string FileInput = "F:\\code\\images\\Gun.jpg";
+string FileOutput = "F:\\code\\images\\Gun.png";
 string SaveBIGFilePath = "F:\\code\\images\\bigtest.png";
-int countColorsResult = 30; // количество цветов будет в итоговом изображении (из-за алгоритма подбора, их будет возможно меньше)
-int wsm = 45; //ширина в см
-int hsm = 50; //высота в см
+int countColorsResult = 30; // количество цветов будет в итоговом изображении
+int wsm = 15; //ширина в см
+int hsm = 22; //высота в см
 
 ResizeImages resizeImages = new ResizeImages();
 resizeImages.DecreaseImage(FileInput, wsm, hsm);
@@ -22,5 +23,7 @@ usingColors.CreatePNGUsingColor(result);
 
 resizeImages.CreateBigImages(FileOutput, SaveBIGFilePath, result);
 
-/* var col = result.Select(y => y.IdThread);
-Console.WriteLine(col.Any(s => s == "3120")); */
+/* var cieLab1 = new CieLab( 6.7747F, -0.2908F, -2.4247F);
+var cieLab2 = new CieLab(5.8714F, -0.0985F, -2.2286F);
+
+Console.WriteLine(Formulas.CIEDE2000(cieLab1, cieLab2)); */
