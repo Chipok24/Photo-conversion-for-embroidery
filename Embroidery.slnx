@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Embroidery.Core/Embroidery.Core.csproj" />
+  <Project Path="Embroidery.Wpf/Embroidery.Wpf.csproj" />
+  <Project Path="EmbroiderySaveAndLoad.Core/EmbroiderySaveAndLoad.Core.csproj" />
+</Solution>

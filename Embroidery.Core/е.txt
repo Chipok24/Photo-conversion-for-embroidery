@@ -1,0 +1,26 @@
+using SixLabors.ImageSharp.ColorSpaces.Conversion;
+using image;
+using System.Diagnostics;
+
+string FileInput = "F:\\code\\images\\ba2.png";
+string FileOutput = "F:\\code\\images\\ba2new.png";
+string FileWork = "F:\\code\\images\\Work.png";
+string SaveBIGFilePath = "F:\\code\\images\\Big.png";
+int countColorsResult = 30; // количество цветов будет в итоговом изображении
+int wsm = 20; //ширина в см
+int hsm = 30; //высота в см
+
+ResizeImages resizeImages = new ResizeImages();
+resizeImages.DecreaseImage(FileInput, FileWork, wsm, hsm);
+
+CreatePixelImage createPixelImage = new CreatePixelImage(new AssemblingPixelImage(new Analitycs(), new ThreadSelection(), new DrawSymbols()), new ImageReadPixel(new ColorSpaceConverter()), new ImageReplacingPixels(new ColorSpaceConverter()));   
+var result = createPixelImage.CreateIamge(FileWork, FileOutput, countColorsResult, wsm, hsm);
+
+ImageReadPixel imageReadPixel = new ImageReadPixel(new ColorSpaceConverter());
+var ColorQuantity = imageReadPixel.ReadPixelToQuantity(FileOutput, result);
+ColorQuantity = ColorQuantity.Where(x => x.Value > 0).ToDictionary();
+
+UsingColors usingColors = new UsingColors();
+usingColors.CreatePNGUsingColor(ColorQuantity);
+
+resizeImages.CreateBigImages(FileOutput, SaveBIGFilePath, result);
