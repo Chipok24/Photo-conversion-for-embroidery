@@ -1,0 +1,42 @@
+<Window x:Class="Embroidery.Wpf.ImportImageWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Embroidery.Wpf"
+        mc:Ignorable="d"
+        Title="Созадние схемы" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen">
+    <Grid Margin="10" Width="200">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.Column="0" >Высота в см</TextBlock>
+        <TextBox Name="HeightSMBox" Grid.Row="0" Grid.Column="1"></TextBox>
+
+        <TextBlock Grid.Row="1" Grid.Column="0">Ширина в см</TextBlock>
+        <TextBox Name="WidthSMBox" Grid.Row="1" Grid.Column="1"></TextBox>
+
+        <TextBlock Grid.Row="2" Grid.Column="0">Количество цветов</TextBlock>
+        <TextBox Name="ColorCountBox" Grid.Row="2" Grid.Column="1"></TextBox>
+
+        <Button Grid.Row="3" Grid.ColumnSpan="2" Click="ChooseImage_Click">Выбрать изобржение</Button>
+ 
+        <WrapPanel Grid.Row="4" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="0,15,0,0">
+            <Button IsDefault="True" Click="Accept_Click" MinWidth="60" Margin="0,0,10,0">OK</Button>
+            <Button IsCancel="True" MinWidth="60">Отмена</Button>
+        </WrapPanel>
+
+        
+ 
+    </Grid>
+</Window>

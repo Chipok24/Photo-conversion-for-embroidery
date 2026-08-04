@@ -18,6 +18,8 @@ using Embroidery.Wpf.Mappers;
 using Microsoft.Win32;
 using System.IO;
 using System.Diagnostics;
+using Embroidery.Wpf.Settings;
+using EmbroiderySaveAndLoad.Core.Models;
 namespace Embroidery.Wpf;
 
 /// <summary>
@@ -25,68 +27,119 @@ namespace Embroidery.Wpf;
 /// </summary>
 public partial class MainWindow : Window
 {
-    private readonly EmbroideryGenerator embroideryGenerator = new EmbroideryGenerator();
-    private FileWork fileWork = new FileWork();
-    private Pattern pattern;
-    PatternView patternView;
+    private readonly EmbroideryGenerator _embroideryGenerator = new EmbroideryGenerator();
+    public readonly SettingsManager _settingsManager = new SettingsManager();
+    private readonly FileWork _fileWork = new FileWork();
+    private List<ProjectFile> _projectFiles;
+    private Setting _seting;
+    private Pattern? _pattern;
+    private PatternView? _patternView;
     public MainWindow()
     {
         InitializeComponent();
-        
-        //
 
-
-        Loaded += MainWindow_Save;
+        Loaded += MainWindow_Loaded;
 
     }
 
     public async void Button_Save(object? sender, RoutedEventArgs e)
     {
-        if (patternView is null || pattern is null)
+        if (_patternView is null || _pattern is null)
         {
             return;
         }
-        await fileWork.PatternSaveAsync(PatternMapper.ToPattern(patternView , pattern));
+        await _fileWork.PatternSaveAsync(PatternMapper.ToPattern(_patternView , _pattern), _seting.LastOpenedProject);
     }
 
-    public void Button_Open(object? sender, RoutedEventArgs e)
+    public async void Button_Open(object? sender, RoutedEventArgs e)
     {
-        OpenFileDialog openFileDialog = new OpenFileDialog();
-        bool? result = openFileDialog.ShowDialog();
-        if (result == true)
+        ImportImageWindow importImageWindow = new ImportImageWindow();
+        if (importImageWindow.ShowDialog()==true)
         {
-            string selectPathFile = openFileDialog.FileName;
-
-            Debug.WriteLine(selectPathFile);
-            DisplayPattern(selectPathFile);
+            DisplayPattern(
+                importImageWindow.FilePath,
+                importImageWindow.HeightSM,
+                importImageWindow.WidthSM,
+                importImageWindow.ColorCount
+            );
+            if (_pattern is null)
+            {
+                return;
+            }
+            _seting.LastOpenedProject = await _fileWork.PrimarySavePatternAsync(_pattern, _seting.ProjectsFolder ,importImageWindow.FilePath);
+            await AutoLoadProjectFiles();
         }
     }
 
-    private void DisplayPattern(string PathFile)
+    public async void ProjectsListBox_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
-        
-        pattern = embroideryGenerator.ImageAlgoritm(PathFile, 30, 20, 20);
-        patternView = PatternMapper.ToViewModel(pattern);
-        PatternViewCanvas.SetPatternVies(patternView);
+        if (Projects.SelectedIndex is int project)
+        {
+            await PatternViewSave();
+            await ProjectFileDisplay(_projectFiles[project].FilePath);
+            _seting.LastOpenedProject = _projectFiles[project].FilePath;
+            _settingsManager.SaveSetting(_seting);
+        }
+    }
+
+    private async void MainWindow_Loaded(object? sender, RoutedEventArgs e)
+    {
+        _seting = await _settingsManager.LoadSetting();
+        await AutoLoadProjectFiles();
+        await ProjectFileDisplay(_seting.LastOpenedProject);
     }
 
     private async void MainWindow_Save(object? sender, RoutedEventArgs e)
     {
-        //await fileWork.PatternSaveAsync(PatternMapper.ToPattern(patternView , pattern));
-
-        await MainWindow_Loaded();
+        await PatternViewSave();
     }
 
-    public async Task MainWindow_Loaded()
+    private void DisplayPattern(string PathFile, int HSM, int WSM, int CountColor)
     {
-        pattern = await fileWork.PatternLoadAsync();
-        patternView = PatternMapper.ToViewModel(pattern);
-        PatternViewCanvas.SetPatternVies(patternView);
+        
+        _pattern = _embroideryGenerator.ImageAlgoritm(PathFile, CountColor, WSM, HSM);
+        PatternViewDisplay();
+    }
+
+    private async Task ProjectFileDisplay(string ProjectFile)
+    {
+        _pattern = await _fileWork.PatternLoadAsync(ProjectFile);
+
+        if (_pattern is null)
+        {
+            return;
+        }
+        PatternViewDisplay();
+    }
+
+    private void PatternViewDisplay()
+    {
+        if (_pattern is null)
+        {
+            return;
+        }
+        _patternView = PatternMapper.ToViewModel(_pattern);
+        PatternViewCanvas.SetPatternVies(_patternView);
         PatternViewCanvas.SetCamera(new Camera
         {
             CameraX = 0,
             CameraY = 0,
             Zoom = 5
         });
+    }
+
+    private async Task PatternViewSave()
+    {
+        if (_pattern is null || _patternView is null)
+        {
+            return;
+        }
+        _seting.LastOpenedProject = await _fileWork.PatternSaveAsync(PatternMapper.ToPattern(_patternView , _pattern), _seting.LastOpenedProject);
+    }
+
+    private async Task AutoLoadProjectFiles()
+    {
+        _projectFiles = await _fileWork.GetProjectFiles(_seting.ProjectsFolder);
+        Projects.ItemsSource = _projectFiles.Select(x => x.FileName);;
     }
 }

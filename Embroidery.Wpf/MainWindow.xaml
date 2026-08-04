@@ -14,14 +14,17 @@
             <ColumnDefinition Width="200" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="100"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <ToolBar Grid.ColumnSpan="3" Grid.Row="0" Height="50" VerticalAlignment="Top">
+        <ToolBar Grid.ColumnSpan="2" Grid.Row="0" Height="50" VerticalAlignment="Top">
             <Button Content="Сохранить" Click="Button_Save"/>
-            <Button Content="Выбрать изображение" Click="Button_Open"/>
+            <Button Content="Загрузить изображение" Click="Button_Open"/>
         </ToolBar>
+
+        <ListBox SelectionChanged="ProjectsListBox_SelectionChanged" Name="Projects" Grid.Column="2" Grid.Row="0">
+        </ListBox>
     
 
     <controls:PatternCanvas x:Name="PatternViewCanvas" Grid.Column="0" Grid.Row="1"/>

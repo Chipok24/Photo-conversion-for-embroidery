@@ -1,6 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <None Update="Setting\Setting.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <ProjectReference Include="..\Embroidery.Core\Embroidery.Core.csproj" />
     <ProjectReference Include="..\EmbroiderySaveAndLoad.Core\EmbroiderySaveAndLoad.Core.csproj" />
   </ItemGroup>
