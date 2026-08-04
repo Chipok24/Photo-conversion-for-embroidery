@@ -3,12 +3,13 @@ using EmbroiderySaveAndLoad.Core.Models;
 using SixLabors.ImageSharp.ColorSpaces;
 using System.Diagnostics;
 using System.Text.Json;
+using System.IO;
 
 namespace EmbroiderySaveAndLoad.Core.FileWork;
 
 public class FileWork
 {
-    public async Task PatternSaveAsync(Pattern pattern)
+    public async Task<string> PatternSaveAsync(Pattern pattern, string filePath)
     {
         Cell[][] cells = ToJagged(pattern.Cells);
 
@@ -20,18 +21,24 @@ public class FileWork
             modelColorSaves.Add(new ModelColorSave(cieLabSave, rgbSave, item.IdThread, ToJagged(item.Symbol)));
         }
 
-        PatternSave patternSave = new PatternSave(){Threads = modelColorSaves, Cells = cells}; 
+        PatternSave patternSave = new PatternSave(){Threads = modelColorSaves, Cells = cells};
 
-        await using (FileStream fileStream = new FileStream("F:\\code\\ProjectImage\\Embroidery\\Saves\\Embroidery.json", FileMode.OpenOrCreate))
+        await using (FileStream fileStream = new FileStream(filePath, FileMode.Create))
         {
             await JsonSerializer.SerializeAsync(fileStream, patternSave);
         }
+        return filePath;
     }
 
-    public async Task<Pattern> PatternLoadAsync()
+    public async Task<Pattern?> PatternLoadAsync(string filePath)
     {
+        if (string.IsNullOrWhiteSpace(filePath))
+        {
+            return null;
+        }
+
         PatternSave? patternSave;
-        await using (FileStream fileStream = new FileStream("F:\\code\\ProjectImage\\Embroidery\\Saves\\Embroidery.json", FileMode.Open))
+        await using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
         {
             patternSave = await JsonSerializer.DeserializeAsync<PatternSave>(fileStream);
         }
@@ -67,6 +74,40 @@ public class FileWork
         
         Pattern pattern = new Pattern(){Threads = modelColors, ThreadsQuantity = threadsQuantity, Cells = cells};
         return pattern;
+    }
+
+    public async Task<string> PrimarySavePatternAsync(Pattern pattern, string projectsFolder ,string filePath)
+    {
+        int count = 1;
+        var files = await GetProjectFiles(projectsFolder);
+        foreach (var file in files)
+        {
+            if (file.FullFileName.Contains(Path.GetFileNameWithoutExtension(filePath)))
+            {
+                count++;
+            }
+        }
+        string nameFile = Path.GetFileNameWithoutExtension(filePath);
+        if (count > 1)
+        {
+            nameFile = $"{nameFile}{count}";
+        }
+        nameFile = $"{nameFile}.json";
+        string primaryFile = Path.Combine(projectsFolder, nameFile);
+        return await PatternSaveAsync(pattern, primaryFile);
+    }
+
+    public async Task<List<ProjectFile>> GetProjectFiles(string path)
+    {
+        string[] files = Directory.GetFiles(path, "*.json");
+
+        List<ProjectFile> projectFiles = new List<ProjectFile>();
+        
+        foreach (var file in files)
+        {
+            projectFiles.Add(new ProjectFile(file, Path.GetFileName(file).Replace(".json", ""), Path.GetFileName(file)));
+        }
+        return projectFiles;
     }
 
     private T[][] ToJagged<T>(T[,] values)

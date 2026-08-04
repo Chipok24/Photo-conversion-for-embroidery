@@ -3,7 +3,7 @@
 ##
 ## Get latest from `dotnet new gitignore`
 /Saves
-
+Безымянный.png
 # dotenv files
 .env
 
