@@ -34,6 +34,7 @@ public partial class MainWindow : Window
     private Setting _seting;
     private Pattern? _pattern;
     private PatternView? _patternView;
+
     public MainWindow()
     {
         InitializeComponent();
@@ -124,7 +125,7 @@ public partial class MainWindow : Window
         {
             CameraX = 0,
             CameraY = 0,
-            Zoom = 5
+            Zoom = 10
         });
     }
 
