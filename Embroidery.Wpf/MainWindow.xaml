@@ -30,5 +30,15 @@
     <controls:PatternCanvas x:Name="PatternViewCanvas" Grid.Column="0" Grid.Row="1"/>
     <GridSplitter Grid.Column="1" Grid.Row="1" ShowsPreview="False" Width="3"
             HorizontalAlignment="Center" VerticalAlignment="Stretch" />
+
+        <ScrollViewer
+            Grid.Column="2"
+            Grid.Row="1"
+            VerticalScrollBarVisibility="Auto"
+            HorizontalScrollBarVisibility="Disabled">
+
+            <controls:ThreadInfo x:Name="ThreadInfoView"/>
+
+        </ScrollViewer>
     </Grid>
 </Window>

@@ -33,14 +33,18 @@ public partial class MainWindow : Window
     private List<ProjectFile> _projectFiles;
     private Setting _seting;
     private Pattern? _pattern;
-    private PatternView? _patternView;
+    private PatternView? _patternView; 
+    
 
     public MainWindow()
     {
         InitializeComponent();
 
         Loaded += MainWindow_Loaded;
-
+        PatternViewCanvas.MouseWheel += PatternCanvasMouseWheel;
+        PatternViewCanvas.PatternViewChanged += PatternViewCanvas_PatternViewChanged;
+        ThreadInfoView.ThreadIndexChanged += ThreadInfoView_ThreadIndexChanged;
+        
     }
 
     public async void Button_Save(object? sender, RoutedEventArgs e)
@@ -127,7 +131,25 @@ public partial class MainWindow : Window
             CameraY = 0,
             Zoom = 10
         });
+        ThreadInfoViewDisplay();
     }
+
+    private void PatternCanvasMouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        int zoom = e.Delta / 120;
+        PatternViewCanvas.SetZoom(zoom, e.GetPosition(PatternViewCanvas));
+        ThreadInfoView.SetZoom(zoom);
+    }
+
+    private void ThreadInfoViewDisplay()
+    {
+        if (_patternView is null)
+        {
+            return;
+        }
+        ThreadInfoView.SetPatternVies(_patternView);
+    }
+    
 
     private async Task PatternViewSave()
     {
@@ -142,5 +164,16 @@ public partial class MainWindow : Window
     {
         _projectFiles = await _fileWork.GetProjectFiles(_seting.ProjectsFolder);
         Projects.ItemsSource = _projectFiles.Select(x => x.FileName);;
+    }
+
+    private void PatternViewCanvas_PatternViewChanged(object? sender, EventArgs e)
+    {
+        ThreadInfoView.SetInvalidateVisual();
+    }
+
+    private void ThreadInfoView_ThreadIndexChanged(object? sender, int? e)
+    {
+        Debug.WriteLine(e);
+        PatternViewCanvas.SetChosenThreadIndex(e);
     }
 }

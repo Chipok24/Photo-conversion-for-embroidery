@@ -57,8 +57,10 @@ public class FileWork
         Dictionary<byte, int> threadsQuantity = new Dictionary<byte, int>();
         foreach (var cell in cells)
         {
-
-
+            if (cell.ThreadIndex is null)
+            {
+                continue;
+            }
             if (threadsQuantity.ContainsKey((byte)cell.ThreadIndex))
             {
                 threadsQuantity[(byte)cell.ThreadIndex] += 1;
