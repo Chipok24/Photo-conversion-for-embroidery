@@ -43,8 +43,8 @@ public static class Formulas
         double a2 = (1 + Gg) * cieLab2.A;
 
 
-        double C1 = Math.Sqrt(Math.Pow(a1, 2) + Math.Pow(cieLab1.B, 2));
-        double C2 = Math.Sqrt(Math.Pow(a2, 2) + Math.Pow(cieLab2.B, 2));
+        double C1 = Math.Sqrt(a1*a1 + cieLab1.B*2);
+        double C2 = Math.Sqrt(a2*a2 + cieLab1.B*2);
 
         double delC = C2 - C1;
 
@@ -56,7 +56,7 @@ public static class Formulas
         
 
         double delh;
-        if (C1 * C2 == 1e-12)
+        if (C1 < 1e-12 || C2 < 1e-12)
         {
             delh = 0;
         }
@@ -79,7 +79,7 @@ public static class Formulas
         double Rc = 2 * Math.Sqrt(Math.Pow(divC, 7) / (Math.Pow(divC, 7) + Math.Pow(25, 7)));
 
         double divH;
-        if (C1 * C2 == 1e-12)
+        if (C1 < 1e-12 || C2 < 1e-12)
         {
             divH = h1 + h2;
         }
@@ -99,7 +99,7 @@ public static class Formulas
 
         double divL = (cieLab1.L + cieLab2.L) / 2;
 
-        double Sl = 1 + ((0.015 * Math.Pow(divL - 50, 2)) / Math.Sqrt(20 +  Math.Pow(divL - 50, 2)));
+        double Sl = 1 + (0.015 * (divL - 50 * divL - 50) / Math.Sqrt(20 +  (divL - 50 * divL - 50)));
         double Sc = 1 + 0.045 * divC;
 
         double T = 1 -

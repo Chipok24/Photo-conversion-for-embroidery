@@ -16,18 +16,15 @@ namespace image
             _imageReplacingPixels = imageReplacingPixels;
         }
 
-        public List<ModelColor> CreateIamge(string FileInput, string FileSmallOutput, int countColorsResult, int wsm, int hsm)
+        public List<ModelColor> CreateIamge(Image<Rgba32> image, string FileSmallOutput, int countColorsResult, int wsm, int hsm)
         {
-            using (Image<Rgba32> image = Image.Load<Rgba32>(FileInput))
-            {
-                List<CieLab> colorsLAB = _imageReadPixel.ReadPixleToCieLAb(image); 
+            List<CieLab> colorsLAB = _imageReadPixel.ReadPixleToCieLAb(image); 
 
-                List<ModelColor> WorkColors = _assemblingPixelImage.AssemblingPixel(countColorsResult, colorsLAB);
+            List<ModelColor> WorkColors = _assemblingPixelImage.AssemblingPixel(countColorsResult, colorsLAB);
 
-                _imageReplacingPixels.ReplacingPixels(image, WorkColors);
-                image.SaveAsPng(FileSmallOutput);
-                return WorkColors;
-            }
+            _imageReplacingPixels.ReplacingPixels(image, WorkColors);
+            image.SaveAsPng(FileSmallOutput);
+            return WorkColors;
         }
     }
 }

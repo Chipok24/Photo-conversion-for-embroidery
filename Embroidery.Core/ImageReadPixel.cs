@@ -34,10 +34,8 @@ public class ImageReadPixel : IImageReadPixel
         return colorsSieLab;
     }
 
-    public Dictionary<byte, int> ReadPixelToQuantity(string FileInput, List<ModelColor> modelColors)
+    public Dictionary<byte, int> ReadPixelToQuantity(Image<Rgba32> image, List<ModelColor> modelColors)
     {
-        using (Image<Rgba32> image = Image.Load<Rgba32>(FileInput))
-        {
             Dictionary<byte, int> colorQuantity = new Dictionary<byte, int>(); 
             for (int i = 1; i < image.Height; i++)
             {
@@ -58,7 +56,6 @@ public class ImageReadPixel : IImageReadPixel
                 }
             }
             return colorQuantity;
-        }
     }
 
     public Cell[,] ReadPixelToCell(string FileInput, List<ModelColor> modelColors)

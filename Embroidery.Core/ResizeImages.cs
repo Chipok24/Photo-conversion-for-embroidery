@@ -45,12 +45,9 @@ public class ResizeImages
             imageO.SaveAsPng(FileBigOutput);
         }
     }
-    public void DecreaseImage(string FileInput, string FileWork, int wsm, int hsm)
+    public void DecreaseImage(Image<Rgba32> image, string FileWork, int wsm, int hsm)
     {
-        using(Image<Rgba32> image = Image.Load<Rgba32>(FileInput))
-        {
-            image.Mutate(x => x.Resize(wsm * 6, hsm * 6));
-            image.SaveAsPng(FileWork);
-        }
+        image.Mutate(x => x.Resize(wsm * 6, hsm * 6));
+        image.SaveAsPng(FileWork);
     }
 }
