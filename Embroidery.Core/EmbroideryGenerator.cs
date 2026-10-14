@@ -10,24 +10,18 @@ namespace Embroidery.Core.EmbroideryGenerator;
 public class EmbroideryGenerator
 {
     private readonly string FileWork = "F:\\code\\images\\Work.png";
-    public Pattern ImageAlgoritm(string ImageFileInput, int countColorsResult, int wsm, int hsm)
+    public Pattern ImageAlgoritm(Image<Rgba32> ImageFileInput, int countColorsResult, int wsm, int hsm)
     {
-        Image<Rgba32> image = Image.Load<Rgba32>(ImageFileInput);
         ResizeImages resizeImages = new ResizeImages();
-        resizeImages.DecreaseImage(image, FileWork, wsm, hsm);
+        resizeImages.DecreaseImage(ImageFileInput, FileWork, wsm, hsm);
         CreatePixelImage createPixelImage = new CreatePixelImage(new AssemblingPixelImage(new Analitycs(), new ThreadSelection(), new DrawSymbols()), new ImageReadPixel(new ColorSpaceConverter()), new ImageReplacingPixels(new ColorSpaceConverter()));   
-        var result = createPixelImage.CreateIamge(image, FileWork, countColorsResult, wsm, hsm);
+        var result = createPixelImage.CreateIamge(ImageFileInput, FileWork, countColorsResult, wsm, hsm);
 
         ImageReadPixel imageReadPixel = new ImageReadPixel(new ColorSpaceConverter());
-        var ColorQuantity = imageReadPixel.ReadPixelToQuantity(image, result);
+        var ColorQuantity = imageReadPixel.ReadPixelToQuantity(ImageFileInput, result);
         ColorQuantity = ColorQuantity.Where(x => x.Value > 0).ToDictionary();
 
-        Pattern pattern = new Pattern() {Threads = result, ThreadsQuantity = ColorQuantity, Cells = imageReadPixel.ReadPixelToCell(FileWork, result)};
+        Pattern pattern = new Pattern() {Threads = result, ThreadsQuantity = ColorQuantity, Cells = imageReadPixel.ReadPixelToCell(ImageFileInput, result)};
         return pattern;
     }
-
-/* UsingColors usingColors = new UsingColors();
-usingColors.CreatePNGUsingColor(ColorQuantity);
-
-resizeImages.CreateBigImages(FileOutput, SaveBIGFilePath, result); */
 }

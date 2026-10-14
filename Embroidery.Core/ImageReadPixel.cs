@@ -58,10 +58,8 @@ public class ImageReadPixel : IImageReadPixel
             return colorQuantity;
     }
 
-    public Cell[,] ReadPixelToCell(string FileInput, List<ModelColor> modelColors)
+    public Cell[,] ReadPixelToCell(Image<Rgba32> image, List<ModelColor> modelColors)
     {
-        using (Image<Rgba32> image = Image.Load<Rgba32>(FileInput))
-        {
             Cell[,] cells = new Cell[image.Width, image.Height];
             for (int i = 0; i < image.Height; i++)
             {
@@ -77,6 +75,5 @@ public class ImageReadPixel : IImageReadPixel
                 }
             }
             return cells;
-        }
     }
 }
