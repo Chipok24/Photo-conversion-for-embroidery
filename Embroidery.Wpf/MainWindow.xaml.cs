@@ -20,6 +20,8 @@ using System.IO;
 using System.Diagnostics;
 using Embroidery.Wpf.Settings;
 using EmbroiderySaveAndLoad.Core.Models;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp;
 namespace Embroidery.Wpf;
 
 /// <summary>
@@ -101,8 +103,8 @@ public partial class MainWindow : Window
 
     private void DisplayPattern(string PathFile, int HSM, int WSM, int CountColor)
     {
-        
-        _pattern = _embroideryGenerator.ImageAlgoritm(PathFile, CountColor, WSM, HSM);
+        SixLabors.ImageSharp.Image<Rgba32> image = SixLabors.ImageSharp.Image.Load<Rgba32>(PathFile);
+        _pattern = _embroideryGenerator.ImageAlgoritm(image, CountColor, WSM, HSM);
         PatternViewDisplay();
     }
 
