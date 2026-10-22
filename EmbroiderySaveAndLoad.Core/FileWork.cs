@@ -9,6 +9,14 @@ namespace EmbroiderySaveAndLoad.Core.FileWork;
 
 public class FileWork
 {
+    public async Task BackupSaveAsync(Pattern pattern, string backupPath, string filePath)
+    {
+        string nameFile = $"{Path.GetFileNameWithoutExtension(filePath)}BACKUP.json";
+        string fullPath = Path.Combine(backupPath, nameFile);
+        await PatternSaveAsync(pattern, fullPath);
+
+    }
+
     public async Task<string> PatternSaveAsync(Pattern pattern, string filePath)
     {
         Cell[][] cells = ToJagged(pattern.Cells);

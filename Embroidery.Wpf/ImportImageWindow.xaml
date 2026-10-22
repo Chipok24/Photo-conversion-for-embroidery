@@ -13,6 +13,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -30,8 +31,9 @@
         <TextBox Name="ColorCountBox" Grid.Row="2" Grid.Column="1"></TextBox>
 
         <Button Grid.Row="3" Grid.ColumnSpan="2" Click="ChooseImage_Click">Выбрать изобржение</Button>
+        <Image Grid.Row="4" Grid.ColumnSpan="2" x:Name="SelectImage" Source="" />
  
-        <WrapPanel Grid.Row="4" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="0,15,0,0">
+        <WrapPanel Grid.Row="5" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="0,15,0,0">
             <Button IsDefault="True" Click="Accept_Click" MinWidth="60" Margin="0,0,10,0">OK</Button>
             <Button IsCancel="True" MinWidth="60">Отмена</Button>
         </WrapPanel>

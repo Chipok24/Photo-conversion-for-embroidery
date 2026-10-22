@@ -22,6 +22,7 @@ using Embroidery.Wpf.Settings;
 using EmbroiderySaveAndLoad.Core.Models;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
+using Microsoft.VisualBasic;
 namespace Embroidery.Wpf;
 
 /// <summary>
@@ -36,7 +37,6 @@ public partial class MainWindow : Window
     private Setting _seting;
     private Pattern? _pattern;
     private PatternView? _patternView; 
-    
 
     public MainWindow()
     {
@@ -46,7 +46,6 @@ public partial class MainWindow : Window
         PatternViewCanvas.MouseWheel += PatternCanvasMouseWheel;
         PatternViewCanvas.PatternViewChanged += PatternViewCanvas_PatternViewChanged;
         ThreadInfoView.ThreadIndexChanged += ThreadInfoView_ThreadIndexChanged;
-        
     }
 
     public async void Button_Save(object? sender, RoutedEventArgs e)
@@ -55,7 +54,7 @@ public partial class MainWindow : Window
         {
             return;
         }
-        await _fileWork.PatternSaveAsync(PatternMapper.ToPattern(_patternView , _pattern), _seting.LastOpenedProject);
+        await PatternViewSave();
     }
 
     public async void Button_Open(object? sender, RoutedEventArgs e)
@@ -74,6 +73,10 @@ public partial class MainWindow : Window
                 return;
             }
             _seting.LastOpenedProject = await _fileWork.PrimarySavePatternAsync(_pattern, _seting.ProjectsFolder ,importImageWindow.FilePath);
+            if (_pattern is not null)
+            {
+                await _fileWork.BackupSaveAsync(_pattern, _seting.Backups, _seting.LastOpenedProject);
+            }
             await AutoLoadProjectFiles();
         }
     }
@@ -83,9 +86,13 @@ public partial class MainWindow : Window
         if (Projects.SelectedIndex is int project)
         {
             await PatternViewSave();
+            if (_pattern is not null)
+            {
+                await _fileWork.BackupSaveAsync(_pattern, _seting.Backups, _seting.LastOpenedProject);
+            }
             await ProjectFileDisplay(_projectFiles[project].FilePath);
             _seting.LastOpenedProject = _projectFiles[project].FilePath;
-            _settingsManager.SaveSetting(_seting);
+            await _settingsManager.SaveSetting(_seting);
         }
     }
 
@@ -94,6 +101,7 @@ public partial class MainWindow : Window
         _seting = await _settingsManager.LoadSetting();
         await AutoLoadProjectFiles();
         await ProjectFileDisplay(_seting.LastOpenedProject);
+        await AutoSavePatternAsync();
     }
 
     private async void MainWindow_Save(object? sender, RoutedEventArgs e)
@@ -177,5 +185,14 @@ public partial class MainWindow : Window
     {
         Debug.WriteLine(e);
         PatternViewCanvas.SetChosenThreadIndex(e);
+    }
+
+    private async Task AutoSavePatternAsync()
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(30));
+        while (await timer.WaitForNextTickAsync())
+        {
+            await PatternViewSave();
+        }
     }
 }

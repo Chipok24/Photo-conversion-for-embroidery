@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Automation;
+using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 
 namespace Embroidery.Wpf;
@@ -32,11 +33,13 @@ public partial class ImportImageWindow : Window
     public void ChooseImage_Click(object sender, RoutedEventArgs e)
     {
         OpenFileDialog openFileDialog = new OpenFileDialog();
+        openFileDialog.Filter = "Images (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg";
         bool? result = openFileDialog.ShowDialog();
         if (result == true)
         {
             string selectPathFile = openFileDialog.FileName;
             FilePath = selectPathFile;
+            SelectImage.Source = new BitmapImage(new Uri(FilePath));
         }
     }
 }

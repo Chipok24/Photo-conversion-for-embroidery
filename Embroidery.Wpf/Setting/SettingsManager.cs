@@ -26,7 +26,7 @@ public class SettingsManager
         return setting;
     }
 
-    public async void SaveSetting(Setting setting)
+    public async Task SaveSetting(Setting setting)
     {
         await using (FileStream fileStream = new FileStream(_path, FileMode.Create))
         {
