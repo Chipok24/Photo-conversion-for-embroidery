@@ -5,6 +5,11 @@
 /Saves
 /Backups
 Безымянный.png
+**/obj/
+**/bin/
+images/
+tony2.png
+
 # dotenv files
 .env
 
