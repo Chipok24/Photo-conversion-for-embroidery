@@ -9,6 +9,7 @@
 **/bin/
 images/
 tony2.png
+Work.png
 
 # dotenv files
 .env

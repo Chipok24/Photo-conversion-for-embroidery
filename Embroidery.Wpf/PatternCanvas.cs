@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -25,7 +26,9 @@ public class PatternCanvas : FrameworkElement
     private int _lastPositionCellY = -1;
     private bool _initialCellState = true;
     private int? _chosenThreadIndex;
-    public event EventHandler? PatternViewChanged;
+    private sbyte? _threadIndexChange;
+    public event EventHandler<Cell>? PatternViewChanged2;
+
 
     protected override void OnRender(DrawingContext dC)
     {
@@ -64,10 +67,7 @@ public class PatternCanvas : FrameworkElement
         }
 
         startX = Math.Max(0, startX);
-        startY = Math.Max(0, startY);
-
-        //double proc = _camera.Zoom * 0.20;
-        //double kletca = _camera.Zoom - proc * 2;   
+        startY = Math.Max(0, startY); 
 
         for (int x = startX; x < endX; x++)
         {
@@ -86,27 +86,11 @@ public class PatternCanvas : FrameworkElement
                 if (_camera.Zoom < 20)
                 {
                     DrawingCell(dC, rect, cell, false, _chosenThreadIndex);
-/*                     if (PatternView.Cells[x, y].IsCompleted is true)
-                    {
-                        dC.DrawRectangle(PatternView.Threads[(int)threadId].BrushTransparent, null, rect);
-                    }
-                    else
-                    {
-                        dC.DrawRectangle(PatternView.Threads[(int)threadId].Brush, null, rect);
-                    } */
                 }
 
                 else
                 {
                     DrawingCell(dC, rect, cell, true, _chosenThreadIndex);
-                    /* if (PatternView.Cells[x, y].IsCompleted is true)
-                    {
-                        dC.DrawImage(PatternView.Threads[(int)threadId].TestSymbolTransparent, rect);
-                    }
-                    else
-                    {
-                        dC.DrawImage(PatternView.Threads[(int)threadId].TestSymbol, rect);
-                    } */
                 }   
 
 
@@ -123,16 +107,22 @@ public class PatternCanvas : FrameworkElement
         _lastPositionCellX = positionX;
         _lastPositionCellY = positionY;
 
-        byte? threadindex = PatternView.Cells[positionX, positionY].ThreadIndex;
-        if (threadindex is null)
+        if (_threadIndexChange is sbyte threadIndexChange)
         {
-            return;
+            ChangeColorCellOnMouseLeftButtonDown(positionX, positionY, threadIndexChange);
         }
+        else
+        {
+            byte? threadindex = PatternView.Cells[positionX, positionY].ThreadIndex;
+            if (threadindex is null)
+            {
+                return;
+            }
 
-        _initialCellState = !PatternView.Cells[positionX, positionY].IsCompleted;
-        PatternView.Cells[positionX, positionY].IsCompleted = !PatternView.Cells[positionX, positionY].IsCompleted;
-
-        SetPatternThreadsQuantity(threadindex.Value, PatternView.Cells[positionX, positionY].IsCompleted);
+            StainingCellOnMouseLeftButtonDown(positionX, positionY);
+            PatternViewChanged2?.Invoke(this, PatternView.Cells[positionX, positionY]);
+        }
+        
         InvalidateVisual();
         
     }
@@ -150,22 +140,18 @@ public class PatternCanvas : FrameworkElement
 
     protected override void OnMouseMove(MouseEventArgs e)
     {
-        if (Mouse.LeftButton == MouseButtonState.Pressed)
+        int positionX = (int)Math.Floor((e.GetPosition(this).X + _camera.CameraX) / _camera.Zoom);
+        int positionY = (int)Math.Floor((e.GetPosition(this).Y + _camera.CameraY) / _camera.Zoom);
+        if (positionX == _lastPositionCellX && positionY == _lastPositionCellY)
         {
-            int positionX = (int)Math.Floor((e.GetPosition(this).X + _camera.CameraX) / _camera.Zoom);
-            int positionY = (int)Math.Floor((e.GetPosition(this).Y + _camera.CameraY) / _camera.Zoom);
-
-            if (positionX == _lastPositionCellX && positionY == _lastPositionCellY)
-            {
-                return;
-            }
-            _lastPositionCellX = positionX;
-            _lastPositionCellY = positionY;
-            if (positionX < 0 || positionY < 0 || PatternView.Cells.GetLength(0) <= positionX || PatternView.Cells.GetLength(1) <= positionY)
-            {
-                return;
-            }
-
+            return;
+        }
+        if (positionX < 0 || positionY < 0 || PatternView.Cells.GetLength(0) <= positionX || PatternView.Cells.GetLength(1) <= positionY)
+        {
+            return;
+        }
+        if (Mouse.LeftButton == MouseButtonState.Pressed && _threadIndexChange is null)
+        {
             if (PatternView.Cells[positionX, positionY].IsCompleted != _initialCellState)
             {
                 byte? threadindex = PatternView.Cells[positionX, positionY].ThreadIndex;
@@ -173,8 +159,13 @@ public class PatternCanvas : FrameworkElement
                 {
                     return;
                 }
-                SetPatternThreadsQuantity(threadindex.Value, _initialCellState);
             }
+            
+            if (_initialCellState == PatternView.Cells[positionX, positionY].IsCompleted)
+            {
+                return;
+            }
+
             if (_initialCellState)
             {
                 PatternView.Cells[positionX, positionY].IsCompleted = true;
@@ -183,9 +174,21 @@ public class PatternCanvas : FrameworkElement
             {
                 PatternView.Cells[positionX, positionY].IsCompleted = false;
             }
+            _lastPositionCellX = positionX;
+            _lastPositionCellY = positionY;
+            PatternViewChanged2?.Invoke(this, PatternView.Cells[positionX, positionY]);
             InvalidateVisual();
             
         }
+
+        if (Mouse.LeftButton == MouseButtonState.Pressed && _threadIndexChange is sbyte threadIndexChange)
+        {
+            _lastPositionCellX = positionX;
+            _lastPositionCellY = positionY;
+            ChangeColorCellOnMouseLeftButtonDown(positionX, positionY, threadIndexChange);
+            InvalidateVisual();
+        }
+
 
         if (Mouse.MiddleButton == MouseButtonState.Pressed)
         {
@@ -250,21 +253,10 @@ public class PatternCanvas : FrameworkElement
         InvalidateVisual();
     }
 
-    private void SetPatternThreadsQuantity(byte threadIndex, bool operatioon = true)
+    public void SetThreadIndexChange(sbyte? threadIndex)
     {
-        if (PatternView is null)
-        {
-            return;
-        }
-        if (!operatioon)
-        {
-            PatternView.ThreadsQuantity[threadIndex]++;
-        }
-        else
-        {
-            PatternView.ThreadsQuantity[threadIndex]--;
-        }
-        PatternViewChanged?.Invoke(this, EventArgs.Empty);
+        _threadIndexChange = threadIndex;
+        InvalidateVisual();
     }
 
     private void DrawingCell(DrawingContext dC, Rect rect, Cell cell, bool drawSymbol = false, int? chosenThreadIndex = null)
@@ -292,6 +284,38 @@ public class PatternCanvas : FrameworkElement
             {
                 dC.DrawRectangle(thread.Brush, null, rect);
             }
+        }
+    }
+    
+    public void ResetParameters()
+    {
+        _chosenThreadIndex = null;
+        _threadIndexChange = null;
+    }
+
+    private void StainingCellOnMouseLeftButtonDown(int x, int y)
+    {
+        _initialCellState = !PatternView.Cells[x, y].IsCompleted;
+        PatternView.Cells[x, y].IsCompleted = !PatternView.Cells[x, y].IsCompleted;
+    }
+
+    private void ChangeColorCellOnMouseLeftButtonDown(int x, int y, sbyte threadIndex)
+    {
+        if (!PatternView.Cells[x, y].IsCompleted)
+        {
+            PatternView.Cells[x, y].IsCompleted = true;
+            PatternViewChanged2?.Invoke(this, PatternView.Cells[x, y]);
+        }
+        
+        PatternView.Cells[x, y].IsCompleted = false;
+        if (threadIndex == -1)
+        {
+            PatternView.Cells[x, y].ThreadIndex = null;
+        }
+        else
+        {
+            PatternView.Cells[x, y].ThreadIndex = (byte)threadIndex;
+            PatternViewChanged2?.Invoke(this, PatternView.Cells[x, y]);
         }
     }
 }

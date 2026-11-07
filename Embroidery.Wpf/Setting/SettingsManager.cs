@@ -13,7 +13,10 @@ public class SettingsManager
 {
     private readonly string _path = Path.Combine(AppContext.BaseDirectory, "Setting", "Setting.json");
 
-    public SettingsManager() { }
+    public SettingsManager()
+    {
+        
+    }
 
     public async Task<Setting> LoadSetting()
     {

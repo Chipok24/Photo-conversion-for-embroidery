@@ -7,38 +7,119 @@
         xmlns:controls="clr-namespace:Embroidery.Wpf.Controls"
         mc:Ignorable="d"
         Title="MainWindow" Height="800" Width="800">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="200" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="100"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-        </Grid.RowDefinitions>
+        <Grid Background="#F5F5F5">
 
-        <ToolBar Grid.ColumnSpan="2" Grid.Row="0" Height="50" VerticalAlignment="Top">
-            <Button Content="Сохранить" Click="Button_Save"/>
-            <Button Content="Загрузить изображение" Click="Button_Open"/>
-        </ToolBar>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="240"/>
+            </Grid.ColumnDefinitions>
 
-        <ListBox SelectionChanged="ProjectsListBox_SelectionChanged" Name="Projects" Grid.Column="2" Grid.Row="0">
-        </ListBox>
-    
+            <Grid.RowDefinitions>
+                <RowDefinition Height="55"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-    <controls:PatternCanvas x:Name="PatternViewCanvas" Grid.Column="0" Grid.Row="1"/>
-    <GridSplitter Grid.Column="1" Grid.Row="1" ShowsPreview="False" Width="3"
-            HorizontalAlignment="Center" VerticalAlignment="Stretch" />
+            <!-- Панель инструментов -->
+            <ToolBar Grid.Row="0"
+                    Grid.ColumnSpan="3"
+                    Height="45"
+                    VerticalAlignment="Center"
+                    Background="#FFFFFF">
 
-        <ScrollViewer
-            Grid.Column="2"
-            Grid.Row="1"
-            VerticalScrollBarVisibility="Auto"
-            HorizontalScrollBarVisibility="Disabled">
+                <Button Content="Настройки"
+                        Click="Button_Setting"
+                        Padding="10,5"
+                        Margin="2"/>
 
-            <controls:ThreadInfo x:Name="ThreadInfoView"/>
+                <Separator/>
 
-        </ScrollViewer>
-    </Grid>
+                <Button Content="Сохранить"
+                        Click="Button_Save"
+                        Padding="10,5"
+                        Margin="2"/>
+
+                <Button Content="Загрузить изображение"
+                        Click="Button_Open"
+                        Padding="10,5"
+                        Margin="2"/>
+
+            </ToolBar>
+
+            <!-- Рабочая область -->
+            <Border Grid.Row="1"
+                    Grid.Column="0"
+                    Background="White"
+                    Margin="5"
+                    BorderBrush="#DADADA"
+                    BorderThickness="1">
+
+                <controls:PatternCanvas x:Name="PatternViewCanvas"/>
+
+            </Border>
+
+            <!-- Разделитель -->
+            <GridSplitter Grid.Row="1"
+                        Grid.Column="1"
+                        Width="5"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Stretch"
+                        ShowsPreview="False"
+                        Background="#D0D0D0"/>
+
+            <!-- Боковая панель -->
+            <Grid Grid.Row="1"
+                Grid.Column="2"
+                Margin="5">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="200"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Список проектов -->
+                <Border Grid.Row="0"
+                        Background="White"
+                        BorderBrush="#DADADA"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Margin="0,0,0,5">
+
+                    <DockPanel>
+
+                        <TextBlock Text="Проекты"
+                                FontSize="15"
+                                FontWeight="SemiBold"
+                                Margin="10,8"
+                                DockPanel.Dock="Top"/>
+
+                        <ListBox Name="Projects"
+                                SelectionChanged="ProjectsListBox_SelectionChanged"
+                                BorderThickness="0"
+                                Margin="5"/>
+
+                    </DockPanel>
+
+                </Border>
+
+                <!-- Информация о нитях -->
+                <Border Grid.Row="1"
+                        Background="White"
+                        BorderBrush="#DADADA"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Margin="0,5,0,0">
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                HorizontalScrollBarVisibility="Disabled">
+
+                        <controls:ThreadInfo x:Name="ThreadInfoView"/>
+
+                    </ScrollViewer>
+
+                </Border>
+
+            </Grid>
+
+        </Grid>
 </Window>

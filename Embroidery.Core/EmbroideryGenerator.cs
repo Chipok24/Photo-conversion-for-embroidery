@@ -9,7 +9,7 @@ namespace Embroidery.Core.EmbroideryGenerator;
 
 public class EmbroideryGenerator
 {
-    private readonly string FileWork = "F:\\code\\images\\Work.png";
+    private readonly string FileWork = "K:\\code\\MyImageProject\\Photo-conversion-for-embroidery\\Work.png";
     public Pattern ImageAlgoritm(Image<Rgba32> ImageFileInput, int countColorsResult, int wsm, int hsm)
     {
         ResizeImages resizeImages = new ResizeImages();

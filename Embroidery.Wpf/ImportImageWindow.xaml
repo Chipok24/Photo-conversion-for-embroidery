@@ -6,39 +6,104 @@
         xmlns:local="clr-namespace:Embroidery.Wpf"
         mc:Ignorable="d"
         Title="Созадние схемы" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen">
-    <Grid Margin="10" Width="200">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+        <Grid Margin="20" Width="340">
+            <Grid.RowDefinitions>
+                <!-- Параметры -->
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+                <!-- Выбор изображения -->
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="200"/>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" >Высота в см</TextBlock>
-        <TextBox Name="HeightSMBox" Grid.Row="0" Grid.Column="1"></TextBox>
+                <!-- Кнопки -->
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="1" Grid.Column="0">Ширина в см</TextBlock>
-        <TextBox Name="WidthSMBox" Grid.Row="1" Grid.Column="1"></TextBox>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="2" Grid.Column="0">Количество цветов</TextBlock>
-        <TextBox Name="ColorCountBox" Grid.Row="2" Grid.Column="1"></TextBox>
+            <!-- Высота -->
+            <TextBlock Grid.Row="0"
+                    Grid.Column="0"
+                    Text="Высота (см)"
+                    VerticalAlignment="Center"
+                    Margin="0,0,15,10"/>
 
-        <Button Grid.Row="3" Grid.ColumnSpan="2" Click="ChooseImage_Click">Выбрать изобржение</Button>
-        <Image Grid.Row="4" Grid.ColumnSpan="2" x:Name="SelectImage" Source="" />
- 
-        <WrapPanel Grid.Row="5" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="0,15,0,0">
-            <Button IsDefault="True" Click="Accept_Click" MinWidth="60" Margin="0,0,10,0">OK</Button>
-            <Button IsCancel="True" MinWidth="60">Отмена</Button>
-        </WrapPanel>
+            <TextBox Grid.Row="0"
+                    Grid.Column="1"
+                    Name="HeightSMBox"
+                    Margin="0,0,0,10"
+                    Padding="5"/>
 
-        
- 
-    </Grid>
+            <!-- Ширина -->
+            <TextBlock Grid.Row="1"
+                    Grid.Column="0"
+                    Text="Ширина (см)"
+                    VerticalAlignment="Center"
+                    Margin="0,0,15,10"/>
+
+            <TextBox Grid.Row="1"
+                    Grid.Column="1"
+                    Name="WidthSMBox"
+                    Margin="0,0,0,10"
+                    Padding="5"/>
+
+            <!-- Количество цветов -->
+            <TextBlock Grid.Row="2"
+                    Grid.Column="0"
+                    Text="Количество цветов"
+                    VerticalAlignment="Center"
+                    Margin="0,0,15,15"/>
+
+            <TextBox Grid.Row="2"
+                    Grid.Column="1"
+                    Name="ColorCountBox"
+                    Margin="0,0,0,15"
+                    Padding="5"/>
+
+            <!-- Выбор изображения -->
+            <Button Grid.Row="3"
+                    Grid.ColumnSpan="2"
+                    Content="Выбрать изображение"
+                    Click="ChooseImage_Click"
+                    Height="34"
+                    Margin="0,0,0,10"/>
+
+            <!-- Предварительный просмотр -->
+            <Border Grid.Row="4"
+                    Grid.ColumnSpan="2"
+                    BorderBrush="LightGray"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="5"
+                    Margin="0,0,0,15">
+
+                <Image x:Name="SelectImage"
+                    Source=""
+                    Stretch="Uniform"/>
+            </Border>
+
+            <!-- Кнопки управления -->
+            <StackPanel Grid.Row="5"
+                        Grid.ColumnSpan="2"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right">
+
+                <Button Content="Создать"
+                        IsDefault="True"
+                        Click="Accept_Click"
+                        MinWidth="85"
+                        Height="32"
+                        Margin="0,0,10,0"/>
+
+                <Button Content="Отмена"
+                        IsCancel="True"
+                        MinWidth="85"
+                        Height="32"/>
+            </StackPanel>
+        </Grid>
 </Window>

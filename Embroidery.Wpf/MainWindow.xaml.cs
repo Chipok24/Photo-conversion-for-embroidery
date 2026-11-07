@@ -36,16 +36,16 @@ public partial class MainWindow : Window
     private List<ProjectFile> _projectFiles;
     private Setting _seting;
     private Pattern? _pattern;
-    private PatternView? _patternView; 
-
+    private PatternView? _patternView;
     public MainWindow()
     {
         InitializeComponent();
 
         Loaded += MainWindow_Loaded;
         PatternViewCanvas.MouseWheel += PatternCanvasMouseWheel;
-        PatternViewCanvas.PatternViewChanged += PatternViewCanvas_PatternViewChanged;
-        ThreadInfoView.ThreadIndexChanged += ThreadInfoView_ThreadIndexChanged;
+        PatternViewCanvas.PatternViewChanged2 += PatternViewCanvas_PatternViewChanged2;
+        ThreadInfoView.ThreadIndexDisplay += ThreadInfoView_ThreadIndexDisplay;
+        ThreadInfoView.ThreadIndexChange += ThreadInfoVies_ThreadIndexChange;
     }
 
     public async void Button_Save(object? sender, RoutedEventArgs e)
@@ -73,10 +73,19 @@ public partial class MainWindow : Window
                 return;
             }
             _seting.LastOpenedProject = await _fileWork.PrimarySavePatternAsync(_pattern, _seting.ProjectsFolder ,importImageWindow.FilePath);
-            if (_pattern is not null)
+            if (_pattern is not null && _seting.Backups is not null)
             {
                 await _fileWork.BackupSaveAsync(_pattern, _seting.Backups, _seting.LastOpenedProject);
             }
+            await AutoLoadProjectFiles();
+        }
+    }
+
+    public async void Button_Setting(object? sender, RoutedEventArgs e)
+    {
+        SettingView settingView = new SettingView(_seting);
+        if (settingView.ShowDialog() is true)
+        {
             await AutoLoadProjectFiles();
         }
     }
@@ -86,10 +95,14 @@ public partial class MainWindow : Window
         if (Projects.SelectedIndex is int project)
         {
             await PatternViewSave();
-            if (_pattern is not null)
+            if (_pattern is not null && _seting.Backups is not null)
             {
                 await _fileWork.BackupSaveAsync(_pattern, _seting.Backups, _seting.LastOpenedProject);
             }
+
+            PatternViewCanvas.ResetParameters();
+            ThreadInfoView.ResetParameters();
+
             await ProjectFileDisplay(_projectFiles[project].FilePath);
             _seting.LastOpenedProject = _projectFiles[project].FilePath;
             await _settingsManager.SaveSetting(_seting);
@@ -172,19 +185,28 @@ public partial class MainWindow : Window
 
     private async Task AutoLoadProjectFiles()
     {
-        _projectFiles = await _fileWork.GetProjectFiles(_seting.ProjectsFolder);
+        string folder = _seting.ProjectsFolder;
+        if (folder is null)
+        {
+            return;
+        }
+        _projectFiles = await _fileWork.GetProjectFiles(folder);
         Projects.ItemsSource = _projectFiles.Select(x => x.FileName);;
     }
 
-    private void PatternViewCanvas_PatternViewChanged(object? sender, EventArgs e)
+    private void PatternViewCanvas_PatternViewChanged2(object? sender, Cell e)
     {
-        ThreadInfoView.SetInvalidateVisual();
+        ThreadInfoView.RecalculateCountThread(e);
     }
 
-    private void ThreadInfoView_ThreadIndexChanged(object? sender, int? e)
+    private void ThreadInfoView_ThreadIndexDisplay(object? sender, int? e)
     {
-        Debug.WriteLine(e);
         PatternViewCanvas.SetChosenThreadIndex(e);
+    }
+
+    private void ThreadInfoVies_ThreadIndexChange(object? sender, sbyte? e)
+    {
+        PatternViewCanvas.SetThreadIndexChange(e);
     }
 
     private async Task AutoSavePatternAsync()
