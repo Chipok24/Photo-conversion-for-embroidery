@@ -9,13 +9,13 @@ namespace Embroidery.Core.EmbroideryGenerator;
 
 public class EmbroideryGenerator
 {
-    private readonly string FileWork = "K:\\code\\MyImageProject\\Photo-conversion-for-embroidery\\Work.png";
+    //сделать сохранение картинки после createPixelImage.CreateIamge
     public Pattern ImageAlgoritm(Image<Rgba32> ImageFileInput, int countColorsResult, int wsm, int hsm)
     {
         ResizeImages resizeImages = new ResizeImages();
-        resizeImages.DecreaseImage(ImageFileInput, FileWork, wsm, hsm);
+        ImageFileInput = resizeImages.DecreaseImage(ImageFileInput, wsm, hsm);
         CreatePixelImage createPixelImage = new CreatePixelImage(new AssemblingPixelImage(new Analitycs(), new ThreadSelection(), new DrawSymbols()), new ImageReadPixel(new ColorSpaceConverter()), new ImageReplacingPixels(new ColorSpaceConverter()));   
-        var result = createPixelImage.CreateIamge(ImageFileInput, FileWork, countColorsResult, wsm, hsm);
+        var result = createPixelImage.CreateIamge(ImageFileInput, countColorsResult);
 
         ImageReadPixel imageReadPixel = new ImageReadPixel(new ColorSpaceConverter());
         var ColorQuantity = imageReadPixel.ReadPixelToQuantity(ImageFileInput, result);
